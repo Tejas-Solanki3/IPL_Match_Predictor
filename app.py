@@ -115,7 +115,7 @@ model, le_team, le_venue, le_toss_dec = load_models()
 st.markdown("<div class='title-wrapper'><span class='main-title'>IPL Match Strategy Board</span></div>", unsafe_allow_html=True)
 
 if model is None:
-    st.error("Models not found. Please run the Jupyter Notebook first to train the advanced model.")
+    st.error("Models not found. Please run the Jupyter Notebook first to train the authentic pre-match model.")
     st.stop()
 
 # Info row with Sticky Notes
@@ -125,7 +125,7 @@ with note1:
     st.markdown("""
     <div class="sticky-note sticky-yellow">
         <h4>What we Predict</h4>
-        We predict the absolute winner of an IPL match based on key strategic indicators. Will the home team dominate, or will the visitors steal the show?
+        We predict the absolute winner of an IPL match based strictly on pre-match indicators. Will the home team dominate, or will the visitors steal the show?
     </div>
     """, unsafe_allow_html=True)
 
@@ -135,8 +135,8 @@ with note2:
         <h4>Our Features</h4>
         - Team 1 & Team 2<br>
         - Match Venue<br>
-        - Toss Winner & Decision<br>
-        - <b>Mid-Match Innings Strategy (Runs)</b>
+        - Toss Winner<br>
+        - Toss Decision
     </div>
     """, unsafe_allow_html=True)
 
@@ -144,7 +144,7 @@ with note3:
     st.markdown("""
     <div class="sticky-note sticky-blue">
         <h4>The Strategy</h4>
-        Toss decisions matter, but 1st innings performance dictates the flow of the game. Our AI uses "Mid-Match" analytics to achieve >75% accuracy!
+        T20 Cricket is highly unpredictable! We utilize an Authentic Pre-Match Model (Random Forest) that avoids data leakage to provide realistic win probabilities based purely on the toss and venue.
     </div>
     """, unsafe_allow_html=True)
 
@@ -164,11 +164,9 @@ with col_input:
     
     venue = st.selectbox("Select Match Venue", venue_options)
     
-    st.markdown("### Toss & Mid-Match Strategy")
+    st.markdown("### Toss Strategy")
     toss_winner = st.radio("Who won the toss?", (team1, team2), horizontal=True)
     toss_decision = st.radio("Toss Decision", toss_dec_options, horizontal=True)
-    
-    win_by_runs = st.number_input("Mid-Match Run Lead (Enter 0 for tight matches or chases)", min_value=0, max_value=150, value=0, step=5)
     
     st.write("")
     predict_btn = st.button("Analyze Match")
@@ -178,7 +176,7 @@ with col_result:
         if team1 == team2:
             st.error("Teams must be different!")
         else:
-            with st.spinner('Running Advanced AI Analysis...'):
+            with st.spinner('Running Authentic Pre-Match Analysis...'):
                 # Encode base inputs
                 t1_enc = le_team.transform([team1])[0]
                 t2_enc = le_team.transform([team2])[0]
@@ -186,14 +184,13 @@ with col_result:
                 tw_enc = le_team.transform([toss_winner])[0]
                 td_enc = le_toss_dec.transform([toss_decision])[0]
 
-                # Formulate input exactly as trained
+                # Formulate input exactly as trained (Experiment A)
                 input_data = pd.DataFrame({
-                    'team1': [t1_enc],
-                    'team2': [t2_enc],
-                    'venue': [v_enc],
-                    'toss_winner': [tw_enc],
-                    'toss_decision': [td_enc],
-                    'win_by_runs': [win_by_runs]
+                    'team1_enc': [t1_enc],
+                    'team2_enc': [t2_enc],
+                    'venue_enc': [v_enc],
+                    'toss_winner_enc': [tw_enc],
+                    'toss_decision_enc': [td_enc]
                 })
                 
                 prediction = model.predict(input_data)
