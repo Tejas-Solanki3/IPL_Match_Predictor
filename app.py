@@ -105,6 +105,7 @@ def load_models():
         le_team = joblib.load('le_team.pkl')
         le_venue = joblib.load('le_venue.pkl')
         le_toss_dec = joblib.load('le_toss_dec.pkl')
+        # Cache busted: load fresh models for Viva
         return model, le_team, le_venue, le_toss_dec
     except Exception as e:
         return None, None, None, None
